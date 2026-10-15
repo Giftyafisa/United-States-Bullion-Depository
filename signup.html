@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+<a class="skip-link" href="#signupForm">Skip to sign-up form</a>
 
 <header class="navbar public-header">
   <a class="logo" href="index.html"><span class="logo-mark">US</span><span class="logo-text">United States Bullion Depository<small>Allocated custody</small></span></a>
@@ -53,7 +54,7 @@
 
       <p class="form-error" id="signupError" role="alert"></p>
 
-      <form id="signupForm" novalidate>
+      <form id="signupForm" novalidate aria-label="Sign up form">
         <div class="login-group">
           <label for="signupName">Full name</label>
           <input id="signupName" type="text" autocomplete="name" placeholder="John Doe" required>
@@ -66,12 +67,22 @@
 
         <div class="login-group">
           <label for="signupPassword">Password</label>
-          <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Minimum 8 characters" required>
+          <div class="password-wrap">
+            <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Minimum 8 characters" required>
+            <button type="button" class="password-toggle" data-target="signupPassword" aria-label="Show password">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
 
         <div class="login-group">
           <label for="signupConfirm">Confirm password</label>
-          <input id="signupConfirm" type="password" autocomplete="new-password" placeholder="Repeat your password" required>
+          <div class="password-wrap">
+            <input id="signupConfirm" type="password" autocomplete="new-password" placeholder="Repeat your password" required>
+            <button type="button" class="password-toggle" data-target="signupConfirm" aria-label="Show password">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
 
         <button type="submit" class="btn-primary" id="signupBtn">Create account</button>
@@ -112,6 +123,16 @@
 
 <script src="assets/js/public-nav.js"></script>
 <script>
+document.querySelectorAll(".password-toggle").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById(btn.dataset.target);
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    btn.setAttribute("aria-pressed", show ? "true" : "false");
+  });
+});
+
 document.getElementById("signupForm").addEventListener("submit", async function (e) {
   e.preventDefault(); // stop page refresh
 
@@ -125,21 +146,33 @@ document.getElementById("signupForm").addEventListener("submit", async function 
   errorBox.classList.remove("show");
   errorBox.textContent = "";
 
+  const nameInput = document.getElementById("signupName");
+  const emailInput = document.getElementById("signupEmail");
+  const passwordInput = document.querySelectorAll('input[type="password"]')[0];
+  const confirmInput = document.querySelectorAll('input[type="password"]')[1];
+  [nameInput, emailInput, passwordInput, confirmInput].forEach(el => el.removeAttribute("aria-invalid"));
+
   if (!fullName || !email || !password) {
     errorBox.textContent = "Fill in your name, email, and password.";
     errorBox.classList.add("show");
+    if (!fullName) nameInput.setAttribute("aria-invalid", "true");
+    if (!email) emailInput.setAttribute("aria-invalid", "true");
+    if (!password) passwordInput.setAttribute("aria-invalid", "true");
     return;
   }
 
   if (password.length < 8) {
     errorBox.textContent = "Use a password of at least 8 characters.";
     errorBox.classList.add("show");
+    passwordInput.setAttribute("aria-invalid", "true");
     return;
   }
 
   if (password !== confirm) {
     errorBox.textContent = "Passwords do not match.";
     errorBox.classList.add("show");
+    passwordInput.setAttribute("aria-invalid", "true");
+    confirmInput.setAttribute("aria-invalid", "true");
     return;
   }
 
@@ -164,6 +197,9 @@ document.getElementById("signupForm").addEventListener("submit", async function 
 
     errorBox.textContent = data.message || "Signup failed.";
     errorBox.classList.add("show");
+    if ((data.message || "").toLowerCase().includes("email")) {
+      emailInput.setAttribute("aria-invalid", "true");
+    }
   } catch {
     errorBox.textContent = "Could not reach the server. Check your connection and try again.";
     errorBox.classList.add("show");

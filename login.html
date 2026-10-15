@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+<a class="skip-link" href="#loginForm">Skip to sign-in form</a>
 
 <header class="navbar public-header">
   <a class="logo" href="index.html"><span class="logo-mark">US</span><span class="logo-text">United States Bullion Depository<small>Allocated custody</small></span></a>
@@ -53,7 +54,7 @@
 
       <p class="form-error" id="loginError" role="alert"></p>
 
-      <form id="loginForm" novalidate>
+      <form id="loginForm" novalidate aria-label="Sign in form">
         <div class="login-group">
           <label for="loginEmail">Email address</label>
           <input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
@@ -61,7 +62,12 @@
 
         <div class="login-group">
           <label for="loginPassword">Password</label>
-          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+          <div class="password-wrap">
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+            <button type="button" class="password-toggle" data-target="loginPassword" aria-label="Show password">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
 
         <div class="login-meta">
@@ -112,6 +118,16 @@
 
 <script src="assets/js/public-nav.js"></script>
 <script>
+document.querySelectorAll(".password-toggle").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById(btn.dataset.target);
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    btn.setAttribute("aria-pressed", show ? "true" : "false");
+  });
+});
+
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
@@ -123,9 +139,16 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   errorBox.classList.remove("show");
   errorBox.textContent = "";
 
+  const emailInput = document.getElementById("loginEmail");
+  const passwordInput = document.getElementById("loginPassword");
+  emailInput.removeAttribute("aria-invalid");
+  passwordInput.removeAttribute("aria-invalid");
+
   if (!email || !password) {
     errorBox.textContent = "Enter your email address and password.";
     errorBox.classList.add("show");
+    if (!email) emailInput.setAttribute("aria-invalid", "true");
+    if (!password) passwordInput.setAttribute("aria-invalid", "true");
     return;
   }
 
@@ -157,6 +180,8 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     errorBox.textContent = data.message || "Invalid login details.";
     errorBox.classList.add("show");
+    emailInput.setAttribute("aria-invalid", "true");
+    passwordInput.setAttribute("aria-invalid", "true");
   } catch {
     errorBox.textContent = "Could not reach the server. Check your connection and try again.";
     errorBox.classList.add("show");
