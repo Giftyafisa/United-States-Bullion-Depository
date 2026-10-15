@@ -9,7 +9,7 @@
 <body>
 
 <header class="navbar public-header">
-  <a class="logo" href="index.html">United States Bullion Depository</a>
+  <a class="logo" href="index.html"><span class="logo-mark">US</span><span class="logo-text">United States Bullion Depository<small>Allocated custody</small></span></a>
   <nav class="public-nav-panel" id="publicNavPanel" aria-label="Primary navigation">
     <div class="public-nav-links">
       <a href="index.html">Home</a>
@@ -31,88 +31,138 @@
 </header>
 
 <main class="auth-shell">
-  <section class="auth-intro">
+  <section class="auth-intro" aria-label="About this sign-in">
     <div>
-      <span class="section-kicker">Secure access</span>
-      <h1>Welcome back</h1>
-      <p>Sign in to securely manage your gold holdings, review vault activity, and track every deposit in one place.</p>
+      <a class="auth-brandrow" href="index.html"><span class="logo-mark">US</span>United States Bullion Depository</a>
+      <h1>Welcome back.</h1>
+      <p>Sign in to review holdings, vault activity, and deposits on your private ledger.</p>
     </div>
 
     <ul class="auth-highlights">
-      <li>Live dashboard balances</li>
-      <li>Protected vault records</li>
-      <li>Transparent account activity</li>
+      <li><span class="ah-k">Live balances</span><span class="ah-v">HOLDINGS / OZ</span></li>
+      <li><span class="ah-k">Vault records</span><span class="ah-v">DEPOSIT LOG</span></li>
+      <li><span class="ah-k">Fee schedule</span><span class="ah-v">MONTHLY / VISIBLE</span></li>
     </ul>
   </section>
 
   <section class="auth-card-panel">
-  <div class="login-card auth-card">
-    <h2>Log in to United States Bullion Depository</h2>
-    <p>Access your secure dashboard</p>
+    <div class="login-card auth-card">
+      <span class="auth-note">SECURE SIGN-IN</span>
+      <h2>Log in</h2>
+      <p>Access your secure dashboard.</p>
 
-   <form id="loginForm">
+      <p class="form-error" id="loginError" role="alert"></p>
 
+      <form id="loginForm" novalidate>
+        <div class="login-group">
+          <label for="loginEmail">Email address</label>
+          <input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
+        </div>
 
-      <div class="login-group">
-        <label>Email address</label>
-        <input type="email" placeholder="you@example.com" required>
+        <div class="login-group">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+        </div>
+
+        <div class="login-meta">
+          <label>
+            <input type="checkbox"> Remember me
+          </label>
+          <a href="forgot-password.html">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-primary" id="loginBtn">
+          Log in
+        </button>
+      </form>
+
+      <div class="login-footer">
+        Don’t have an account?
+        <a href="signup.html">Create one</a>
       </div>
+    </div>
+  </section>
+</main>
 
-      <div class="login-group">
-        <label>Password</label>
-        <input type="password" placeholder="••••••••" required>
-      </div>
-
-      <div class="login-meta">
-        <label>
-          <input type="checkbox"> Remember me
-        </label>
-        <a href="forgot-password.html">Forgot password?</a>
-
-      </div>
-
-      <button type="submit" class="btn-primary">
-        Log in
-      </button>
-
-    </form>
-
-    <div class="login-footer">
-      Don’t have an account?
-      <a href="signup.html">Create one</a>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>
+      <a class="logo" href="index.html"><span class="logo-mark">US</span><span class="logo-text">United States Bullion Depository</span></a>
+      <p>Allocated vault custody with documented holdings and a private client ledger.</p>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="security.html">Security</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <ul>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="signup.html">Create account</a></li>
+        <li><a href="contact.html">Support</a></li>
+      </ul>
     </div>
   </div>
-</section>
-</main>
+  <div class="site-footer-base"><span>USBD / VAULT OPERATIONS</span><span>ALLOCATED STORAGE · TERMS APPLY</span></div>
+</footer>
+
 <script src="assets/js/public-nav.js"></script>
 <script>
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
-  e.preventDefault(); 
+  e.preventDefault();
 
-  const email = document.querySelector('input[type="email"]').value;
+  const email = document.querySelector('input[type="email"]').value.trim();
   const password = document.querySelector('input[type="password"]').value;
+  const errorBox = document.getElementById("loginError");
+  const btn = document.getElementById("loginBtn");
+
+  errorBox.classList.remove("show");
+  errorBox.textContent = "";
+
+  if (!email || !password) {
+    errorBox.textContent = "Enter your email address and password.";
+    errorBox.classList.add("show");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Signing in…";
 
   const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1") && location.port !== "5000" ? "http://localhost:5000" : "";
 
-  const response = await fetch(`${API_BASE}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const response = await fetch(`${API_BASE}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (response.ok && data.token) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.user?.role || "user");
+    if (response.ok && data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.user?.role || "user");
 
-    if (data.user?.role === "admin") {
-      window.location.href = "admin/admin.html";
-    } else {
-      window.location.href = "dashboard.html";
+      if (data.user?.role === "admin") {
+        window.location.href = "admin/admin.html";
+      } else {
+        window.location.href = "dashboard.html";
+      }
+      return;
     }
-  } else {
-    alert(data.message || "Invalid login details");
+
+    errorBox.textContent = data.message || "Invalid login details.";
+    errorBox.classList.add("show");
+  } catch {
+    errorBox.textContent = "Could not reach the server. Check your connection and try again.";
+    errorBox.classList.add("show");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Log in";
   }
 });
 </script>

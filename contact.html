@@ -9,7 +9,7 @@
 <body>
 
 <header class="navbar public-header">
-  <a class="logo" href="index.html">United States Bullion Depository</a>
+  <a class="logo" href="index.html"><span class="logo-mark">US</span><span class="logo-text">United States Bullion Depository<small>Allocated custody</small></span></a>
   <nav class="public-nav-panel" id="publicNavPanel" aria-label="Primary navigation">
     <div class="public-nav-links">
       <a href="index.html">Home</a>
@@ -33,35 +33,34 @@
 <!-- HERO SECTION -->
 <section class="support-hero">
   <div class="hero-text">
-    <h1>We’re Here to Help</h1>
-    <p>Wealthshield Bullion Group support is available 24/7 to ensure your gold and account are secure.</p>
+    <h1>Support, around the clock</h1>
+    <p>Account, ledger, and vault questions — answered by the operations team, 24/7.</p>
   </div>
 </section>
 
 <!-- SUPPORT TEAM -->
-<!-- SUPPORT TEAM -->
 <section class="support-team">
-  <h2>Meet Our Support Team</h2>
+  <h2>Support team</h2>
   <div class="team-grid">
     <a href="mailto:jane@goldvault.com" class="team-card">
       <h3>Jane Doe</h3>
-      <p>HEAD OF CUSTOMER SUCCESS</p>
-      <p>Esures customers are satisfied, achieve value from thr product, and remain loyal bt leading the customer success team, improving the customer experience, reducing churn, and driving long-term customer retention and growth</p>
+      <p class="team-role">Customer success</p>
+      <p>Onboarding, account questions, and ongoing service for private clients.</p>
     </a>
     <a href="mailto:sleyk0810@gmail.com" class="team-card">
       <h3>John Smith</h3>
-      <p>TECHNICAL SUPPORT LEAD</p>
-      <p>Customers issues are resolved quickly and effectively. Management of support processes, handle cpmplex technical problems, maintain service quality, collaborate with engineering and product teams, and ensure systems run smoothly while delivering a reliable support experience to users</p>
+      <p class="team-role">Technical support</p>
+      <p>Portal access, ledger discrepancies, and transaction inquiries.</p>
     </a>
     <a href="mailto:mary@goldvault.com" class="team-card">
       <h3>Mary Johnson</h3>
-      <p>CLIENT RELATIONS</p>
-      <p>Focuses on building and maintaining strong relationships with clients.Understanding client needs, resolving concerns, ensuring satisfaction, and promoting long-term partnership that support customer loyalty and business growth</p>
+      <p class="team-role">Client relations</p>
+      <p>Deposit scheduling, documentation, and long-term account care.</p>
     </a>
     <a href="mailto:ahmed@goldvault.com" class="team-card">
       <h3>Ahmed Ali</h3>
-      <p>GOLD SECURITY EXPECT</p>
-      <p>Safe storage, handling and protection of gold assets by designing and enforcing strong security measures, monitoring risks, preventing theft or fraud, ensuring compliance with regulations and maintaining secure systems and processes to protect gold holdings and customer trust.</p>
+      <p class="team-role">Vault operations</p>
+      <p>Intake verification, secure handling, and storage procedures.</p>
     </a>
   </div>
 </section>
@@ -69,7 +68,7 @@
 
 <!-- FAQ SECTION -->
 <section class="support-faq">
-  <h2>Frequently Asked Questions</h2>
+  <h2>Common questions</h2>
   <div class="faq-item">
     <h3>Is my gold insured?</h3>
     <p>Yes. All stored gold is fully insured against theft, loss, or damage.</p>
@@ -94,14 +93,43 @@
 
 <!-- CONTACT FORM -->
 <section class="support-contact">
-  <h2>Contact Support</h2>
+  <h2>Contact support</h2>
   <form>
-    <input type="text" placeholder="Full Name" required>
-    <input type="email" placeholder="Email Address" required>
-    <textarea placeholder="Your Message" rows="6" required></textarea>
-    <button type="submit" class="btn-primary">Send Message</button>
+    <label for="supportName">Full name</label>
+    <input id="supportName" type="text" placeholder="John Doe" required>
+    <label for="supportEmail">Email address</label>
+    <input id="supportEmail" type="email" placeholder="you@example.com" required>
+    <label for="supportMsg">Message</label>
+    <textarea id="supportMsg" placeholder="How can we help?" rows="6" required></textarea>
+    <button type="submit" class="btn-primary">Send message</button>
   </form>
 </section>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div>
+      <a class="logo" href="index.html"><span class="logo-mark">US</span><span class="logo-text">United States Bullion Depository</span></a>
+      <p>Allocated vault custody with documented holdings and a private client ledger.</p>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="security.html">Security</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <ul>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="signup.html">Create account</a></li>
+        <li><a href="contact.html">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="site-footer-base"><span>USBD / VAULT OPERATIONS</span><span>ALLOCATED STORAGE · TERMS APPLY</span></div>
+</footer>
 
 <script src="assets/js/public-nav.js"></script>
 </body>
