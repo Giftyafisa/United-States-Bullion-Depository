@@ -718,8 +718,8 @@ body.public-nav-open { overflow: hidden; }
 .login-group input:focus, .auth-card input:focus { outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px rgba(151, 114, 10, 0.15); }
 .login-group input[aria-invalid="true"] { border-color: var(--bad-ink); box-shadow: 0 0 0 3px rgba(143, 29, 29, 0.12); }
 
-.password-wrap { position: relative; }
-.password-wrap input { padding-right: 46px; }
+.password-wrap { position: relative; display: block; width: 100%; }
+.password-wrap input { width: 100%; padding-right: 46px; }
 .password-toggle {
   position: absolute;
   right: 6px;
