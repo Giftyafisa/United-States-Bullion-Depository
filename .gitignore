@@ -1,0 +1,4 @@
+node_modules/
+wealthshield-backend/node_modules/
+wealthshield-backend/.env
+wealthshield-backend/data/local-users.json

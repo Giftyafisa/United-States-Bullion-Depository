@@ -92,7 +92,9 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   const email = document.querySelector('input[type="email"]').value;
   const password = document.querySelector('input[type="password"]').value;
 
-  const response = await fetch("http://localhost:5000/api/auth/login", {
+  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1") && location.port !== "5000" ? "http://localhost:5000" : "";
+
+  const response = await fetch(`${API_BASE}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
