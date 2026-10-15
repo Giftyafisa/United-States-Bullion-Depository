@@ -13,6 +13,10 @@
   --steel: #161b21;
   --brass: #97720a;
   --brass-deep: #7c5e07;
+  --gold: #e8b923;
+  --gold-deep: #c99a0b;
+  --gold-ink: #211a02;
+  --gold-muted: #5c4a08;
   --radius: 3px;
   --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 }
@@ -52,33 +56,34 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .admin-sidebar {
   width: 248px;
   flex: 0 0 248px;
-  background: var(--steel);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-deep) 100%);
   padding: 24px 14px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  border-right: 1px solid rgba(33, 26, 2, 0.3);
 }
 
-.admin-sidebar h2 { color: #fff; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
+.admin-sidebar h2 { color: var(--gold-ink); font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
 .admin-sidebar .ops-tag {
   display: inline-block;
   font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: #d8c58a; margin-bottom: 20px;
+  color: var(--gold-muted); margin-bottom: 20px;
 }
 
 .admin-sidebar a {
   display: flex; align-items: center;
   min-height: 42px; padding: 0 12px;
   border-radius: var(--radius);
-  color: #c9cdd3; font-weight: 550; font-size: 14px; text-decoration: none;
+  color: var(--gold-ink); font-weight: 600; font-size: 14px; text-decoration: none;
   margin-bottom: 2px; border-left: 3px solid transparent;
   transition: background 0.12s ease, color 0.12s ease;
 }
 
-.admin-sidebar a:hover { background: #222a33; color: #fff; }
-.admin-sidebar a.active { background: #222a33; color: #fff; border-left-color: var(--brass); }
-.admin-sidebar .logout { margin-top: auto; background: transparent; border: 1px solid #333c46; color: #e4e1d6; }
-.admin-sidebar .logout:hover { border-color: #9aa3ad; color: #fff; }
+.admin-sidebar a:hover { background: rgba(33, 26, 2, 0.1); color: var(--gold-ink); }
+.admin-sidebar a.active { background: var(--steel); color: #fff; border-left-color: var(--steel); }
+.admin-sidebar .logout { margin-top: auto; background: transparent; border: 1px solid rgba(33, 26, 2, 0.4); color: var(--gold-ink); }
+.admin-sidebar .logout:hover { background: rgba(33, 26, 2, 0.1); color: var(--gold-ink); }
 
 /* ---------- main ---------- */
 
