@@ -1,18 +1,22 @@
 const express = require("express");
 const Transaction = require("../models/Transaction");
 const User = require("../models/User");
+const Settings = require("../models/Settings");
+const { symbolFor, CURRENCIES } = require("../utils/currency");
 const bcrypt = require("bcryptjs");
 const auth = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 router.get("/dashboard", auth, async (req, res) => {
-  const [transactions, user] = await Promise.all([
+  const [transactions, user, settings] = await Promise.all([
     Transaction.find({ userId: req.user.id }).sort({ createdAt: -1 }).limit(20),
-    User.findById(req.user.id)
+    User.findById(req.user.id),
+    Settings.getSingleton()
   ]);
 
   const pendingCount = transactions.filter(t => t.status === "Pending").length;
+  const currency = user?.currency || settings?.defaultCurrency || "USD";
 
   // Use admin-set values from user document
   res.json({
@@ -21,6 +25,9 @@ router.get("/dashboard", auth, async (req, res) => {
     monthlyFees: user?.monthlyFees || 0,
     lastDepositDate: user?.lastDepositDate || null,
     vaultLocation: user?.vaultLocation || "Main Vault",
+    currency: currency,
+    currencySymbol: symbolFor(currency),
+    currencies: CURRENCIES,
     pendingCount,
     transactions,
     user: user ? {

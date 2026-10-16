@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const auth = require("../middleware/authMiddleware");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
+const Settings = require("../models/Settings");
+const { CURRENCIES } = require("../utils/currency");
 
 const router = express.Router();
 
@@ -33,6 +35,27 @@ router.get("/summary", async (req, res) => {
 	res.json({ totalUsers, totalGold, totalValue, pendingRequests });
 });
 
+/* ---------- PLATFORM SETTINGS (currency) ---------- */
+
+router.get("/settings", async (req, res) => {
+  const settings = await Settings.getSingleton();
+  res.json({ defaultCurrency: settings.defaultCurrency, currencies: CURRENCIES });
+});
+
+router.patch("/settings", async (req, res) => {
+  const { defaultCurrency } = req.body;
+
+  if (!CURRENCIES.includes(defaultCurrency)) {
+    return res.status(400).json({ message: "Unsupported currency" });
+  }
+
+  const settings = await Settings.getSingleton();
+  settings.defaultCurrency = defaultCurrency;
+  await settings.save();
+
+  res.json({ message: "Currency updated", defaultCurrency: settings.defaultCurrency, currencies: CURRENCIES });
+});
+
 router.get("/deposits", async (req, res) => {
 	const deposits = await Transaction.find({ type: "deposit" })
 		.sort({ createdAt: -1 });
@@ -59,6 +82,7 @@ router.get("/users", async (req, res) => {
 		email: u.email,
 		role: u.role,
 		accountId: u.accountId,
+		currency: u.currency || "default",
 		nextOfKin: u.nextOfKin || "",
 		totalGold: u.totalGold || 0,
 		currentValue: u.currentValue || 0,
@@ -82,6 +106,7 @@ router.get("/users/:id", async (req, res) => {
 		email: user.email,
 		role: user.role,
 		accountId: user.accountId,
+		currency: user.currency || "default",
 		nextOfKin: user.nextOfKin || "",
 		totalGold: user.totalGold || 0,
 		currentValue: user.currentValue || 0,
@@ -94,7 +119,7 @@ router.get("/users/:id", async (req, res) => {
 });
 
 router.patch("/users/:id", async (req, res) => {
-	const { totalGold, currentValue, monthlyFees, lastDepositDate, vaultLocation, notes, nextOfKin } = req.body;
+	const { totalGold, currentValue, monthlyFees, lastDepositDate, vaultLocation, notes, nextOfKin, currency } = req.body;
 
 	const updateData = {};
 	if (totalGold !== undefined) updateData.totalGold = Number(totalGold);
@@ -104,6 +129,12 @@ router.patch("/users/:id", async (req, res) => {
 	if (lastDepositDate !== undefined) updateData.lastDepositDate = lastDepositDate ? new Date(lastDepositDate) : null;
 	if (vaultLocation !== undefined) updateData.vaultLocation = vaultLocation;
 	if (notes !== undefined) updateData.notes = notes;
+	if (currency !== undefined) {
+		if (currency !== "default" && !CURRENCIES.includes(currency)) {
+			return res.status(400).json({ message: "Unsupported currency" });
+		}
+		updateData.currency = currency === "default" ? null : currency;
+	}
 
 	const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
 	if (!user) return res.status(404).json({ message: "User not found" });

@@ -42,11 +42,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error("Failed to load dashboard");
       const data = await response.json();
 
+      // Currency is chosen by an admin (platform default, per-user override).
+      const symbol = data.currencySymbol || "$";
+
       // Update main balance section
       const goldBalance = document.getElementById("goldBalance");
       const goldValue = document.getElementById("goldValue");
       if (goldBalance) goldBalance.textContent = `${(data.totalGold || 0).toFixed(2)} oz`;
-      if (goldValue) goldValue.textContent = `€${(data.currentValue || 0).toLocaleString()}`;
+      if (goldValue) goldValue.textContent = `${symbol}${(data.currentValue || 0).toLocaleString()}`;
 
       // Update overview cards
       const cardGoldStored = document.getElementById("cardGoldStored");
@@ -56,8 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const cardLastDeposit = document.getElementById("cardLastDeposit");
       
       if (cardGoldStored) cardGoldStored.textContent = `${(data.totalGold || 0).toFixed(2)} oz`;
-      if (cardCurrentValue) cardCurrentValue.textContent = `€${(data.currentValue || 0).toLocaleString()}`;
-      if (cardMonthlyFees) cardMonthlyFees.textContent = `€${(data.monthlyFees || 0).toLocaleString()}`;
+      if (cardCurrentValue) cardCurrentValue.textContent = `${symbol}${(data.currentValue || 0).toLocaleString()}`;
+      if (cardMonthlyFees) cardMonthlyFees.textContent = `${symbol}${(data.monthlyFees || 0).toLocaleString()}`;
       if (cardNotifications) cardNotifications.textContent = `${data.pendingCount || 0} pending`;
       if (cardLastDeposit) cardLastDeposit.textContent = data.lastDepositDate ? new Date(data.lastDepositDate).toLocaleDateString() : "N/A";
 

@@ -124,6 +124,16 @@
           
           <label for="editVaultLocation">Vault Location</label>
           <input type="text" id="editVaultLocation" placeholder="Main Vault">
+
+          <label for="editCurrency">Currency</label>
+          <select id="editCurrency">
+            <option value="default">Platform default</option>
+            <option value="USD">USD — US Dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British Pound</option>
+            <option value="CAD">CAD — Canadian Dollar</option>
+            <option value="AUD">AUD — Australian Dollar</option>
+          </select>
           
           <label for="editNotes">Notes</label>
           <textarea id="editNotes" rows="3" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;margin-bottom:16px;"></textarea>
@@ -184,6 +194,24 @@
           
           <button type="submit" class="btn-primary">Update Role</button>
         </form>
+      </div>
+
+      <div class="admin-settings-section" style="margin-top: 30px;">
+        <h3>Platform Currency</h3>
+        <p class="admin-settings-note">Used for every account unless a specific user has their own override.</p>
+        <form id="currencyForm" class="admin-form">
+          <label for="defaultCurrency">Default currency for all users</label>
+          <select id="defaultCurrency" required>
+            <option value="USD">USD — US Dollar</option>
+            <option value="EUR">EUR — Euro</option>
+            <option value="GBP">GBP — British Pound</option>
+            <option value="CAD">CAD — Canadian Dollar</option>
+            <option value="AUD">AUD — Australian Dollar</option>
+          </select>
+
+          <button type="submit" class="btn-primary">Save Currency</button>
+        </form>
+        <p class="admin-settings-note" id="currencyStatus"></p>
       </div>
     </div>
 

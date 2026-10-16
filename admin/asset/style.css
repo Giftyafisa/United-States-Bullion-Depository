@@ -164,6 +164,7 @@ tbody tr:hover { background: #fbfaf6; }
 .admin-form textarea { font-family: inherit; }
 .admin-settings-section { margin-bottom: 24px; }
 .admin-settings-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: var(--ink); }
+.admin-settings-note { font-size: 13px; color: var(--muted); margin: -6px 0 16px; }
 
 /* ---------- modal ---------- */
 

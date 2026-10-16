@@ -175,6 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("editNextOfKin").value = user.nextOfKin || "";
     document.getElementById("editLastDepositDate").value = user.lastDepositDate ? new Date(user.lastDepositDate).toISOString().slice(0, 10) : "";
     document.getElementById("editVaultLocation").value = user.vaultLocation || "Main Vault";
+    const editCurrency = document.getElementById("editCurrency");
+    if (editCurrency) editCurrency.value = user.currency && user.currency !== "default" ? user.currency : "default";
     document.getElementById("editNotes").value = user.notes || "";
 
     document.getElementById("editUserModal").style.display = "block";
@@ -210,6 +212,8 @@ document.addEventListener("DOMContentLoaded", () => {
         vaultLocation: document.getElementById("editVaultLocation").value,
         notes: document.getElementById("editNotes").value
       };
+      const editCurrency = document.getElementById("editCurrency");
+      if (editCurrency) updateData.currency = editCurrency.value;
 
       const response = await fetch(`${API_BASE}/api/admin/users/${userId}`, {
         method: "PATCH",
@@ -253,13 +257,32 @@ document.addEventListener("DOMContentLoaded", () => {
     `).join("") || "<tr><td colspan=\"5\">No transactions found</td></tr>";
   };
 
+  const loadCurrencySettings = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/admin/settings`, { headers: authHeaders });
+      if (!response.ok) return;
+      const data = await response.json();
+
+      const select = document.getElementById("defaultCurrency");
+      if (select) select.value = data.defaultCurrency;
+
+      const status = document.getElementById("currencyStatus");
+      if (status) {
+        status.textContent = `Currently set to ${data.defaultCurrency}. Applies to every account without its own override.`;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const loadAll = async () => {
     await Promise.all([
       loadSummary(),
       loadDeposits(),
       loadWithdrawals(),
       loadUsers(),
-      loadTransactions()
+      loadTransactions(),
+      loadCurrencySettings()
     ]);
   };
 
@@ -324,6 +347,30 @@ document.addEventListener("DOMContentLoaded", () => {
         loadUsers();
       } else {
         alert(data.message || "Failed to update role");
+      }
+    });
+  }
+
+  // Platform Currency Form
+  const currencyForm = document.getElementById("currencyForm");
+  if (currencyForm) {
+    currencyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const defaultCurrency = document.getElementById("defaultCurrency").value;
+      const status = document.getElementById("currencyStatus");
+
+      const response = await fetch(`${API_BASE}/api/admin/settings`, {
+        method: "PATCH",
+        headers: authHeaders,
+        body: JSON.stringify({ defaultCurrency })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        if (status) status.textContent = `Saved. Default currency is now ${data.defaultCurrency}.`;
+        alert(`Default currency set to ${data.defaultCurrency}`);
+      } else {
+        alert(data.message || "Failed to update currency");
       }
     });
   }
