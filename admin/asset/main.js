@@ -145,8 +145,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${user.email}</td>
         <td>${user.nextOfKin || "Not set"}</td>
         <td>${user.totalGold} oz</td>
-        <td>€${(user.currentValue || 0).toLocaleString()}</td>
-        <td>€${(user.monthlyFees || 0).toLocaleString()}</td>
+        <td>${user.currencySymbol || "$"}${(user.currentValue || 0).toLocaleString()}</td>
+        <td>${user.currencySymbol || "$"}${(user.monthlyFees || 0).toLocaleString()}</td>
         <td>${user.lastDepositDate ? formatDate(user.lastDepositDate) : "N/A"}</td>
         <td><button class="edit-user-btn" data-id="${user.id}">Edit</button></td>
       </tr>

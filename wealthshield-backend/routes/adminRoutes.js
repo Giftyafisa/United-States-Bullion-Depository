@@ -4,7 +4,7 @@ const auth = require("../middleware/authMiddleware");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
 const Settings = require("../models/Settings");
-const { CURRENCIES } = require("../utils/currency");
+const { CURRENCIES, symbolFor } = require("../utils/currency");
 
 const router = express.Router();
 
@@ -75,6 +75,8 @@ router.get("/transactions", async (req, res) => {
 
 router.get("/users", async (req, res) => {
 	const users = await User.find({}).sort({ createdAt: -1 });
+	const settings = await Settings.getSingleton();
+	const fallback = settings.defaultCurrency;
 
 	const result = users.map(u => ({
 		id: u._id,
@@ -83,6 +85,8 @@ router.get("/users", async (req, res) => {
 		role: u.role,
 		accountId: u.accountId,
 		currency: u.currency || "default",
+		currencyCode: u.currency || fallback,
+		currencySymbol: symbolFor(u.currency || fallback),
 		nextOfKin: u.nextOfKin || "",
 		totalGold: u.totalGold || 0,
 		currentValue: u.currentValue || 0,
