@@ -47,26 +47,24 @@
   </section>
 
   <section class="auth-card-panel">
-    <div class="login-card auth-card">
+    <div class="auth-card">
       <span class="auth-note">SECURE SIGN-IN</span>
       <h2>Log in</h2>
       <p>Access your secure dashboard.</p>
 
-      <p class="form-error" id="loginError" role="alert"></p>
+      <p class="form-error" id="loginError" role="alert" hidden></p>
 
-      <form id="loginForm" novalidate aria-label="Sign in form">
+      <form id="loginForm" novalidate>
         <div class="login-group">
-          <label for="loginEmail">Email address</label>
-          <input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
+          <label for="liEmail">Email address</label>
+          <input id="liEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
         </div>
 
         <div class="login-group">
-          <label for="loginPassword">Password</label>
-          <div class="password-wrap">
-            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required>
-            <button type="button" class="password-toggle" data-target="loginPassword" aria-label="Show password">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
+          <label for="liPassword">Password</label>
+          <div class="field-row">
+            <input id="liPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+            <button type="button" class="field-reveal" data-reveal="liPassword" aria-label="Show password">Show</button>
           </div>
         </div>
 
@@ -77,9 +75,7 @@
           <a href="forgot-password.html">Forgot password?</a>
         </div>
 
-        <button type="submit" class="btn-primary" id="loginBtn">
-          Log in
-        </button>
+        <button type="submit" class="btn-primary" id="loginBtn">Log in</button>
       </form>
 
       <div class="login-footer">
@@ -118,78 +114,91 @@
 
 <script src="assets/js/public-nav.js"></script>
 <script>
-document.querySelectorAll(".password-toggle").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const input = document.getElementById(btn.dataset.target);
-    const show = input.type === "password";
-    input.type = show ? "text" : "password";
-    btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
-    btn.setAttribute("aria-pressed", show ? "true" : "false");
+(function () {
+  var form = document.getElementById("loginForm");
+  var errorBox = document.getElementById("loginError");
+  var btn = document.getElementById("loginBtn");
+  var emailEl = document.getElementById("liEmail");
+  var passEl = document.getElementById("liPassword");
+
+  var API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1") && location.port !== "5000" ? "http://localhost:5000" : "";
+
+  document.querySelectorAll(".field-reveal").forEach(function (toggle) {
+    toggle.addEventListener("click", function () {
+      var input = document.getElementById(toggle.dataset.reveal);
+      var reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      toggle.textContent = reveal ? "Hide" : "Show";
+      toggle.setAttribute("aria-label", reveal ? "Hide password" : "Show password");
+      toggle.setAttribute("aria-pressed", reveal ? "true" : "false");
+      input.focus();
+    });
   });
-});
 
-document.getElementById("loginForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
-
-  const email = document.querySelector('input[type="email"]').value.trim();
-  const password = document.querySelector('input[type="password"]').value;
-  const errorBox = document.getElementById("loginError");
-  const btn = document.getElementById("loginBtn");
-
-  errorBox.classList.remove("show");
-  errorBox.textContent = "";
-
-  const emailInput = document.getElementById("loginEmail");
-  const passwordInput = document.getElementById("loginPassword");
-  emailInput.removeAttribute("aria-invalid");
-  passwordInput.removeAttribute("aria-invalid");
-
-  if (!email || !password) {
-    errorBox.textContent = "Enter your email address and password.";
-    errorBox.classList.add("show");
-    if (!email) emailInput.setAttribute("aria-invalid", "true");
-    if (!password) passwordInput.setAttribute("aria-invalid", "true");
-    return;
+  function setInvalid(el, bad) {
+    if (bad) {
+      el.setAttribute("aria-invalid", "true");
+    } else {
+      el.removeAttribute("aria-invalid");
+    }
   }
 
-  btn.disabled = true;
-  btn.textContent = "Signing in…";
+  [emailEl, passEl].forEach(function (el) {
+    el.addEventListener("input", function () { setInvalid(el, false); });
+  });
 
-  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1") && location.port !== "5000" ? "http://localhost:5000" : "";
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-  try {
-    const response = await fetch(`${API_BASE}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
+    errorBox.hidden = true;
+    errorBox.textContent = "";
 
-    const data = await response.json();
+    var email = emailEl.value.trim();
+    var password = passEl.value;
 
-    if (response.ok && data.token) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.user?.role || "user");
-
-      if (data.user?.role === "admin") {
-        window.location.href = "admin/admin.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
+    if (!email || !password) {
+      errorBox.textContent = "Enter your email address and password.";
+      errorBox.hidden = false;
+      setInvalid(emailEl, !email);
+      setInvalid(passEl, !password);
       return;
     }
 
-    errorBox.textContent = data.message || "Invalid login details.";
-    errorBox.classList.add("show");
-    emailInput.setAttribute("aria-invalid", "true");
-    passwordInput.setAttribute("aria-invalid", "true");
-  } catch {
-    errorBox.textContent = "Could not reach the server. Check your connection and try again.";
-    errorBox.classList.add("show");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Log in";
-  }
-});
+    btn.disabled = true;
+    btn.textContent = "Signing in...";
+
+    fetch(API_BASE + "/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password })
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function (result) {
+        if (result.ok && result.data.token) {
+          localStorage.setItem("token", result.data.token);
+          localStorage.setItem("role", (result.data.user && result.data.user.role) || "user");
+          window.location.href = (result.data.user && result.data.user.role) === "admin" ? "admin/admin.html" : "dashboard.html";
+          return;
+        }
+        errorBox.textContent = result.data.message || "Invalid login details.";
+        errorBox.hidden = false;
+        setInvalid(emailEl, true);
+        setInvalid(passEl, true);
+      })
+      .catch(function () {
+        errorBox.textContent = "Could not reach the server. Check your connection and try again.";
+        errorBox.hidden = false;
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = "Log in";
+      });
+  });
+})();
 </script>
 
 </body>

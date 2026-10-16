@@ -36,7 +36,7 @@
     <div>
       <a class="auth-brandrow" href="index.html"><span class="logo-mark">US</span>United States Bullion Depository</a>
       <h1>Open your account.</h1>
-      <p>One profile for holdings, deposits, and fees — verified at intake, visible from day one.</p>
+      <p>One profile for holdings, deposits, and fees. Verified at intake, visible from day one.</p>
     </div>
 
     <ul class="auth-highlights">
@@ -47,41 +47,38 @@
   </section>
 
   <section class="auth-card-panel">
-    <div class="login-card auth-card">
+    <div class="auth-card">
       <span class="auth-note">NEW ACCOUNT</span>
       <h2>Sign up</h2>
       <p>Enter your details to get started.</p>
 
-      <p class="form-error" id="signupError" role="alert"></p>
+      <p class="form-error" id="signupError" role="alert" hidden></p>
 
-      <form id="signupForm" novalidate aria-label="Sign up form">
+      <form id="signupForm" novalidate>
         <div class="login-group">
-          <label for="signupName">Full name</label>
-          <input id="signupName" type="text" autocomplete="name" placeholder="John Doe" required>
+          <label for="suName">Full name</label>
+          <input id="suName" name="fullName" type="text" autocomplete="name" placeholder="John Doe" required>
         </div>
 
         <div class="login-group">
-          <label for="signupEmail">Email address</label>
-          <input id="signupEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
+          <label for="suEmail">Email address</label>
+          <input id="suEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
         </div>
 
         <div class="login-group">
-          <label for="signupPassword">Password</label>
-          <div class="password-wrap">
-            <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Minimum 8 characters" required>
-            <button type="button" class="password-toggle" data-target="signupPassword" aria-label="Show password">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
+          <label for="suPassword">Password</label>
+          <div class="field-row">
+            <input id="suPassword" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" required>
+            <button type="button" class="field-reveal" data-reveal="suPassword" aria-label="Show password">Show</button>
           </div>
+          <p class="field-hint" id="suStrength">8 characters minimum</p>
         </div>
 
         <div class="login-group">
-          <label for="signupConfirm">Confirm password</label>
-          <div class="password-wrap">
-            <input id="signupConfirm" type="password" autocomplete="new-password" placeholder="Repeat your password" required>
-            <button type="button" class="password-toggle" data-target="signupConfirm" aria-label="Show password">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
+          <label for="suConfirm">Confirm password</label>
+          <div class="field-row">
+            <input id="suConfirm" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat your password" required>
+            <button type="button" class="field-reveal" data-reveal="suConfirm" aria-label="Show password">Show</button>
           </div>
         </div>
 
@@ -123,91 +120,109 @@
 
 <script src="assets/js/public-nav.js"></script>
 <script>
-document.querySelectorAll(".password-toggle").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const input = document.getElementById(btn.dataset.target);
-    const show = input.type === "password";
-    input.type = show ? "text" : "password";
-    btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
-    btn.setAttribute("aria-pressed", show ? "true" : "false");
-  });
-});
+(function () {
+  var form = document.getElementById("signupForm");
+  var errorBox = document.getElementById("signupError");
+  var btn = document.getElementById("signupBtn");
+  var nameEl = document.getElementById("suName");
+  var emailEl = document.getElementById("suEmail");
+  var passEl = document.getElementById("suPassword");
+  var confirmEl = document.getElementById("suConfirm");
+  var strengthEl = document.getElementById("suStrength");
 
-document.getElementById("signupForm").addEventListener("submit", async function (e) {
-  e.preventDefault(); // stop page refresh
+  var API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1") && location.port !== "5000" ? "http://localhost:5000" : "";
 
-  const fullName = document.querySelector('input[type="text"]').value.trim();
-  const email = document.querySelector('input[type="email"]').value.trim();
-  const password = document.querySelectorAll('input[type="password"]')[0].value;
-  const confirm = document.querySelectorAll('input[type="password"]')[1].value;
-  const errorBox = document.getElementById("signupError");
-  const btn = document.getElementById("signupBtn");
-
-  errorBox.classList.remove("show");
-  errorBox.textContent = "";
-
-  const nameInput = document.getElementById("signupName");
-  const emailInput = document.getElementById("signupEmail");
-  const passwordInput = document.querySelectorAll('input[type="password"]')[0];
-  const confirmInput = document.querySelectorAll('input[type="password"]')[1];
-  [nameInput, emailInput, passwordInput, confirmInput].forEach(el => el.removeAttribute("aria-invalid"));
-
-  if (!fullName || !email || !password) {
-    errorBox.textContent = "Fill in your name, email, and password.";
-    errorBox.classList.add("show");
-    if (!fullName) nameInput.setAttribute("aria-invalid", "true");
-    if (!email) emailInput.setAttribute("aria-invalid", "true");
-    if (!password) passwordInput.setAttribute("aria-invalid", "true");
-    return;
-  }
-
-  if (password.length < 8) {
-    errorBox.textContent = "Use a password of at least 8 characters.";
-    errorBox.classList.add("show");
-    passwordInput.setAttribute("aria-invalid", "true");
-    return;
-  }
-
-  if (password !== confirm) {
-    errorBox.textContent = "Passwords do not match.";
-    errorBox.classList.add("show");
-    passwordInput.setAttribute("aria-invalid", "true");
-    confirmInput.setAttribute("aria-invalid", "true");
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = "Creating account…";
-
-  const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1") && location.port !== "5000" ? "http://localhost:5000" : "";
-
-  try {
-    const response = await fetch(`${API_BASE}/api/auth/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, email, password })
+  document.querySelectorAll(".field-reveal").forEach(function (toggle) {
+    toggle.addEventListener("click", function () {
+      var input = document.getElementById(toggle.dataset.reveal);
+      var reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      toggle.textContent = reveal ? "Hide" : "Show";
+      toggle.setAttribute("aria-label", reveal ? "Hide password" : "Show password");
+      toggle.setAttribute("aria-pressed", reveal ? "true" : "false");
+      input.focus();
     });
+  });
 
-    const data = await response.json();
+  function setInvalid(el, bad) {
+    if (bad) {
+      el.setAttribute("aria-invalid", "true");
+    } else {
+      el.removeAttribute("aria-invalid");
+    }
+  }
 
-    if (response.ok) {
-      window.location.href = "login.html";
+  function fail(message, fields) {
+    errorBox.textContent = message;
+    errorBox.hidden = false;
+    fields.forEach(function (el) { setInvalid(el, true); });
+  }
+
+  [nameEl, emailEl, passEl, confirmEl].forEach(function (el) {
+    el.addEventListener("input", function () {
+      setInvalid(el, false);
+      if (el === passEl) {
+        var len = el.value.length;
+        strengthEl.textContent = len === 0 ? "8 characters minimum" : len + " of 8 characters";
+      }
+    });
+  });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    errorBox.hidden = true;
+    errorBox.textContent = "";
+
+    var fullName = nameEl.value.trim();
+    var email = emailEl.value.trim();
+    var password = passEl.value;
+
+    if (!fullName || !email || !password) {
+      fail("Fill in your name, email, and password.", [!fullName ? nameEl : null, !email ? emailEl : null, !password ? passEl : null].filter(Boolean));
       return;
     }
 
-    errorBox.textContent = data.message || "Signup failed.";
-    errorBox.classList.add("show");
-    if ((data.message || "").toLowerCase().includes("email")) {
-      emailInput.setAttribute("aria-invalid", "true");
+    if (password.length < 8) {
+      fail("Use a password of at least 8 characters.", [passEl]);
+      return;
     }
-  } catch {
-    errorBox.textContent = "Could not reach the server. Check your connection and try again.";
-    errorBox.classList.add("show");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Create account";
-  }
-});
+
+    if (password !== confirmEl.value) {
+      fail("Passwords do not match.", [passEl, confirmEl]);
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Creating account...";
+
+    fetch(API_BASE + "/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fullName: fullName, email: email, password: password })
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function (result) {
+        if (result.ok) {
+          window.location.href = "login.html";
+          return;
+        }
+        var message = result.data.message || "Could not create your account.";
+        fail(message, message.toLowerCase().indexOf("email") !== -1 ? [emailEl] : []);
+      })
+      .catch(function () {
+        fail("Could not reach the server. Check your connection and try again.", []);
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = "Create account";
+      });
+  });
+})();
 </script>
 
 </body>

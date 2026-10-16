@@ -709,47 +709,80 @@ body.public-nav-open { overflow: hidden; }
   font-family: var(--mono);
 }
 
-.login-group { margin-bottom: 16px; position: relative; }
+.login-group { margin-bottom: 16px; }
 .login-group label, .auth-card label { display: block; font-size: 13px; font-weight: 650; margin-bottom: 6px; color: var(--ink-soft); }
 .login-group input, .auth-card input {
-  width: 100%; min-height: 48px; padding: 12px 14px;
-  border-radius: var(--radius); border: 1px solid #c9cdd3; background: #fff; font-size: 15px; font-family: inherit;
-}
-.login-group input:focus, .auth-card input:focus { outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px rgba(151, 114, 10, 0.15); }
-.login-group input[aria-invalid="true"] { border-color: var(--bad-ink); box-shadow: 0 0 0 3px rgba(143, 29, 29, 0.12); }
-
-.password-wrap { position: relative; display: block; width: 100%; }
-.password-wrap input {
   display: block;
   width: 100%;
   min-height: 48px;
-  padding: 12px 46px 12px 14px;
+  padding: 12px 14px;
   border-radius: var(--radius);
   border: 1px solid #c9cdd3;
   background: #fff;
   font-size: 15px;
   font-family: inherit;
-  box-sizing: border-box;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  opacity: 1;
 }
-.password-wrap input:focus { outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px rgba(151, 114, 10, 0.15); }
-.password-toggle {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid transparent;
+.login-group input::placeholder, .auth-card input::placeholder { color: var(--faint); opacity: 1; }
+.login-group input:focus, .auth-card input:focus { outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px rgba(151, 114, 10, 0.15); }
+.login-group input[aria-invalid="true"] { border-color: var(--bad-ink); box-shadow: 0 0 0 3px rgba(143, 29, 29, 0.12); }
+
+/* input + reveal button as a CSS grid pair - cannot collapse or overlap */
+.field-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid #c9cdd3;
   border-radius: var(--radius);
-  color: var(--muted);
-  cursor: pointer;
+  background: #fff;
+  overflow: hidden;
 }
-.password-toggle:hover { background: var(--paper); color: var(--ink); }
-.password-toggle:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.field-row:focus-within {
+  border-color: var(--brass);
+  box-shadow: 0 0 0 3px rgba(151, 114, 10, 0.15);
+}
+.field-row input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  opacity: 1;
+  outline: none;
+}
+.field-row input:focus { outline: none; }
+.field-row input[aria-invalid="true"] { background: #fdf4f4; }
+.field-reveal {
+  padding: 0 16px;
+  border: 0;
+  border-left: 1px solid var(--hairline-soft);
+  background: var(--paper);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.field-reveal:hover { background: #ecebe4; color: var(--ink); }
+.field-reveal:focus-visible { outline: 2px solid var(--brass); outline-offset: -2px; }
+.field-hint {
+  margin: 6px 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
 .login-group input[aria-invalid="true"] { border-color: var(--bad-ink); }
 
 .login-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13.5px; margin: 6px 0 22px; }
@@ -769,7 +802,7 @@ body.public-nav-open { overflow: hidden; }
   border: 1px solid #e5b8b8; border-radius: var(--radius);
   font-size: 13.5px; font-weight: 550;
 }
-.form-error.show { display: block; }
+.form-error.show, .form-error:not([hidden]) { display: block; }
 
 /* legacy wrappers reuse auth card */
 .login-wrapper, .auth-wrapper { min-height: 0; display: block; padding: 48px 24px; }
